@@ -45,7 +45,7 @@ const categorias = [
   {
     icon: Building2,
     titulo: "Má infraestrutura",
-    texto: "Salas sem manutenção, banheiros interditados, риscos elétricos e estruturais.",
+    texto: "Salas sem manutenção, banheiros interditados, riscos elétricos e estruturais.",
   },
 ];
 
