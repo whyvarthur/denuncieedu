@@ -7,8 +7,6 @@ import {
   Search,
   Phone,
 } from "lucide-react";
-import heroImg from "@/assets/hero-estudantes.jpg";
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -81,12 +79,9 @@ function Index() {
       </header>
 
       <section className="relative isolate overflow-hidden bg-primary-deep">
-        <img
-          src={heroImg}
-          alt="Estudantes caminhando pelo corredor de uma instituição de ensino"
-          width={1600}
-          height={1000}
-          className="absolute inset-0 h-full w-full object-cover opacity-25"
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,color-mix(in_oklab,var(--accent)_35%,transparent),transparent_55%)]"
         />
         <div className="relative mx-auto max-w-6xl px-5 py-24 md:py-32">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary-foreground">
