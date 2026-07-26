@@ -7,8 +7,6 @@ import {
   Search,
   Phone,
 } from "lucide-react";
-import heroImg from "@/assets/hero-estudantes.jpg";
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
