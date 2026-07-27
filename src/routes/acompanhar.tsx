@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Search, Loader2, Copy, Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { consultarDenuncia } from "@/lib/denuncias.functions";
 
 type Search = { protocolo?: string };
 
@@ -71,19 +71,19 @@ function Acompanhar() {
     let ativo = true;
     setCarregando(true);
     setErro(null);
-    supabase
-      .rpc("consultar_denuncia", { _protocolo: protocolo })
-      .then(({ data, error }) => {
+    consultarDenuncia({ data: { protocolo } })
+      .then((res) => {
         if (!ativo) return;
         setCarregando(false);
-        if (error) {
-          setErro("Não foi possível consultar agora. Tente novamente.");
-          setDados(null);
-          return;
-        }
-        const row = (data as Denuncia[] | null)?.[0] ?? null;
+        const row = (res.denuncia as Denuncia | null) ?? null;
         setDados(row);
         if (!row) setErro("Nenhuma denúncia encontrada com esse protocolo.");
+      })
+      .catch(() => {
+        if (!ativo) return;
+        setCarregando(false);
+        setDados(null);
+        setErro("Não foi possível consultar agora. Tente novamente.");
       });
     return () => {
       ativo = false;

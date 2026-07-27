@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { registrarDenuncia } from "@/lib/denuncias.functions";
 
 export const Route = createFileRoute("/denunciar")({
   head: () => ({
@@ -61,22 +61,24 @@ function Denunciar() {
     }
     const v = parsed.data;
     setEnviando(true);
-    const { data, error } = await supabase.rpc("registrar_denuncia", {
-      _tipo: v.tipo,
-      _instituicao: v.instituicao,
-      _descricao: v.descricao,
-      _cidade: v.cidade || undefined,
-      _estado: v.estado || undefined,
-      _data_ocorrido: v.data_ocorrido || undefined,
-      _contato: v.contato || undefined,
-    });
-    setEnviando(false);
-
-    if (error || !data) {
+    try {
+      const { protocolo } = await registrarDenuncia({
+        data: {
+          tipo: v.tipo,
+          instituicao: v.instituicao,
+          descricao: v.descricao,
+          cidade: v.cidade || undefined,
+          estado: v.estado || undefined,
+          data_ocorrido: v.data_ocorrido || undefined,
+          contato: v.contato || undefined,
+        },
+      });
+      navigate({ to: "/acompanhar", search: { protocolo } });
+    } catch {
       setErro("Não foi possível enviar sua denúncia. Tente novamente em instantes.");
-      return;
+    } finally {
+      setEnviando(false);
     }
-    navigate({ to: "/acompanhar", search: { protocolo: data } });
   }
 
   return (
