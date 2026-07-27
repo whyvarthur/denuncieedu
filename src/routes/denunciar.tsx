@@ -65,10 +65,10 @@ function Denunciar() {
       _tipo: v.tipo,
       _instituicao: v.instituicao,
       _descricao: v.descricao,
-      _cidade: v.cidade || null,
-      _estado: v.estado || null,
-      _data_ocorrido: v.data_ocorrido || null,
-      _contato: v.contato || null,
+      _cidade: v.cidade || undefined,
+      _estado: v.estado || undefined,
+      _data_ocorrido: v.data_ocorrido || undefined,
+      _contato: v.contato || undefined,
     });
     setEnviando(false);
 
