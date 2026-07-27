@@ -14,16 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      denuncias: {
+        Row: {
+          cidade: string | null
+          contato: string | null
+          created_at: string
+          data_ocorrido: string | null
+          descricao: string
+          estado: string | null
+          id: string
+          instituicao: string
+          protocolo: string
+          resposta: string | null
+          status: Database["public"]["Enums"]["denuncia_status"]
+          tipo: Database["public"]["Enums"]["denuncia_tipo"]
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          contato?: string | null
+          created_at?: string
+          data_ocorrido?: string | null
+          descricao: string
+          estado?: string | null
+          id?: string
+          instituicao: string
+          protocolo: string
+          resposta?: string | null
+          status?: Database["public"]["Enums"]["denuncia_status"]
+          tipo: Database["public"]["Enums"]["denuncia_tipo"]
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          contato?: string | null
+          created_at?: string
+          data_ocorrido?: string | null
+          descricao?: string
+          estado?: string | null
+          id?: string
+          instituicao?: string
+          protocolo?: string
+          resposta?: string | null
+          status?: Database["public"]["Enums"]["denuncia_status"]
+          tipo?: Database["public"]["Enums"]["denuncia_tipo"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consultar_denuncia: {
+        Args: { _protocolo: string }
+        Returns: {
+          cidade: string
+          created_at: string
+          estado: string
+          instituicao: string
+          protocolo: string
+          resposta: string
+          status: Database["public"]["Enums"]["denuncia_status"]
+          tipo: Database["public"]["Enums"]["denuncia_tipo"]
+          updated_at: string
+        }[]
+      }
+      gerar_protocolo: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      denuncia_status: "recebida" | "em_analise" | "encaminhada" | "resolvida"
+      denuncia_tipo: "verbal" | "fisica" | "infraestrutura" | "outro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +212,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      denuncia_status: ["recebida", "em_analise", "encaminhada", "resolvida"],
+      denuncia_tipo: ["verbal", "fisica", "infraestrutura", "outro"],
+    },
   },
 } as const
