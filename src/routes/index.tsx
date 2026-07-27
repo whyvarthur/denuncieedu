@@ -68,16 +68,24 @@ function Index() {
             <a href="#categorias" className="opacity-80 transition hover:opacity-100">
               O que denunciar
             </a>
-            <a href="#ajuda" className="opacity-80 transition hover:opacity-100">
-              Ajuda
-            </a>
+            <Link to="/acompanhar" className="opacity-80 transition hover:opacity-100">
+              Acompanhar
+            </Link>
           </nav>
-          <Link
-            to="/denunciar"
-            className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground uppercase tracking-wide transition hover:brightness-110"
-          >
-            Fazer denúncia
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/acompanhar"
+              className="rounded-md border border-primary-foreground/30 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground transition hover:bg-primary-foreground/10 md:hidden"
+            >
+              Protocolo
+            </Link>
+            <Link
+              to="/denunciar"
+              className="rounded-md bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-wide text-accent-foreground transition hover:brightness-110 sm:text-sm"
+            >
+              Denunciar
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -158,13 +166,18 @@ function Index() {
             </p>
           </div>
           <div className="mt-6 flex flex-wrap gap-3 md:mt-0">
-            {["190 Polícia", "180 Mulher", "100 Direitos Humanos"].map((n) => (
-              <span
-                key={n}
-                className="inline-flex items-center gap-2 rounded-md bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground"
+            {[
+              { num: "190", label: "Polícia" },
+              { num: "180", label: "Mulher" },
+              { num: "100", label: "Direitos Humanos" },
+            ].map((n) => (
+              <a
+                key={n.num}
+                href={`tel:${n.num}`}
+                className="inline-flex items-center gap-2 rounded-md bg-primary-foreground/10 px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary-foreground/20"
               >
-                <Phone size={15} /> {n}
-              </span>
+                <Phone size={15} /> {n.num} {n.label}
+              </a>
             ))}
           </div>
         </div>
