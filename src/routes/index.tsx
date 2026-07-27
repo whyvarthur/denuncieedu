@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   MessageSquareWarning,
   HandHelping,
@@ -72,9 +72,12 @@ function Index() {
               Ajuda
             </a>
           </nav>
-          <button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground uppercase tracking-wide transition hover:brightness-110">
+          <Link
+            to="/denunciar"
+            className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground uppercase tracking-wide transition hover:brightness-110"
+          >
             Fazer denúncia
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -95,12 +98,18 @@ function Index() {
             faculdades — com protocolo para acompanhar cada caso.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <button className="rounded-md bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-accent-foreground transition hover:brightness-110">
+            <Link
+              to="/denunciar"
+              className="rounded-md bg-accent px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-accent-foreground transition hover:brightness-110"
+            >
               Fazer denúncia
-            </button>
-            <button className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/35 px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary-foreground/10">
+            </Link>
+            <Link
+              to="/acompanhar"
+              className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/35 px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-primary-foreground transition hover:bg-primary-foreground/10"
+            >
               <Search size={16} /> Acompanhar protocolo
-            </button>
+            </Link>
           </div>
         </div>
       </section>
