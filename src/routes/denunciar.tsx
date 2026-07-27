@@ -61,27 +61,22 @@ function Denunciar() {
     }
     const v = parsed.data;
     setEnviando(true);
-    const { data, error } = await supabase
-      .from("denuncias")
-      .insert({
-        tipo: v.tipo,
-        instituicao: v.instituicao,
-        cidade: v.cidade || null,
-        estado: v.estado ? v.estado.toUpperCase() : null,
-        data_ocorrido: v.data_ocorrido || null,
-        descricao: v.descricao,
-        contato: v.contato || null,
-        protocolo: "",
-      })
-      .select("protocolo")
-      .single();
+    const { data, error } = await supabase.rpc("registrar_denuncia", {
+      _tipo: v.tipo,
+      _instituicao: v.instituicao,
+      _descricao: v.descricao,
+      _cidade: v.cidade || null,
+      _estado: v.estado || null,
+      _data_ocorrido: v.data_ocorrido || null,
+      _contato: v.contato || null,
+    });
     setEnviando(false);
 
     if (error || !data) {
       setErro("Não foi possível enviar sua denúncia. Tente novamente em instantes.");
       return;
     }
-    navigate({ to: "/acompanhar", search: { protocolo: data.protocolo } });
+    navigate({ to: "/acompanhar", search: { protocolo: data } });
   }
 
   return (
