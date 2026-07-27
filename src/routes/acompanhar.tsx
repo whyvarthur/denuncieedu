@@ -25,7 +25,7 @@ export const Route = createFileRoute("/acompanhar")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Acompanhar;
+  component: Acompanhar,
 });
 
 const statusLabel: Record<string, string> = {
