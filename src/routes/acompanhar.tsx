@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Search, Loader2 } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Search = { protocolo?: string };
@@ -63,6 +63,7 @@ function Acompanhar() {
   const [dados, setDados] = useState<Denuncia | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
     if (!protocolo) return;
@@ -144,9 +145,23 @@ function Acompanhar() {
 
         {!carregando && dados && (
           <section className="mt-10 rounded-lg border border-border bg-card p-7">
-            <span className="font-display text-sm font-bold uppercase tracking-widest text-accent">
-              {dados.protocolo}
-            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-display text-sm font-bold uppercase tracking-widest text-accent">
+                {dados.protocolo}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard?.writeText(dados.protocolo);
+                  setCopiado(true);
+                  setTimeout(() => setCopiado(false), 2000);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-muted-foreground transition hover:border-accent hover:text-foreground"
+              >
+                {copiado ? <Check size={13} /> : <Copy size={13} />}
+                {copiado ? "Copiado" : "Copiar"}
+              </button>
+            </div>
             <h2 className="mt-2 text-2xl font-bold text-card-foreground">{dados.instituicao}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {tipoLabel[dados.tipo] ?? dados.tipo}
