@@ -82,6 +82,18 @@ export type Database = {
         }[]
       }
       gerar_protocolo: { Args: never; Returns: string }
+      registrar_denuncia: {
+        Args: {
+          _cidade?: string
+          _contato?: string
+          _data_ocorrido?: string
+          _descricao: string
+          _estado?: string
+          _instituicao: string
+          _tipo: Database["public"]["Enums"]["denuncia_tipo"]
+        }
+        Returns: string
+      }
     }
     Enums: {
       denuncia_status: "recebida" | "em_analise" | "encaminhada" | "resolvida"
