@@ -184,8 +184,25 @@ function Index() {
       </section>
 
       <footer className="border-t border-border py-8">
-        <div className="mx-auto max-w-6xl px-5 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Denuncie.edu — canal independente de denúncias escolares.
+        <div className="mx-auto max-w-6xl space-y-4 px-5 text-sm text-muted-foreground">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">
+              Proteção de dados (LGPD)
+            </h2>
+            <p className="mt-2 max-w-3xl leading-relaxed">
+              Tratamos as informações recebidas de acordo com a Lei Geral de Proteção de Dados
+              Pessoais (LGPD) — Lei nº 13.709/2018. Os dados são coletados apenas para apurar e
+              encaminhar cada denúncia, ficam sob acesso restrito da equipe responsável e não são
+              comercializados nem repassados a terceiros sem base legal. O titular pode solicitar
+              acesso, correção ou exclusão dos seus dados informando o número do protocolo.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 border-t border-border pt-4">
+            <span>© {new Date().getFullYear()} Denuncie.edu — canal independente de denúncias escolares.</span>
+            <Link to="/painel" className="font-semibold transition hover:text-foreground">
+              Área restrita
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

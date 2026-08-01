@@ -39,7 +39,7 @@ const schema = z.object({
   estado: z.string().trim().max(2).optional().or(z.literal("")),
   data_ocorrido: z.string().optional().or(z.literal("")),
   descricao: z.string().trim().min(20, "Descreva o ocorrido com pelo menos 20 caracteres").max(4000),
-  contato: z.string().trim().max(150).optional().or(z.literal("")),
+  contato: z.string().trim().min(5, "Informe um contato para retorno").max(150),
 });
 
 const inputCls =
@@ -70,7 +70,7 @@ function Denunciar() {
           cidade: v.cidade || undefined,
           estado: v.estado || undefined,
           data_ocorrido: v.data_ocorrido || undefined,
-          contato: v.contato || undefined,
+          contato: v.contato,
         },
       });
       navigate({ to: "/acompanhar", search: { protocolo } });
@@ -102,6 +102,21 @@ function Denunciar() {
         <p className="mt-3 text-muted-foreground">
           Não pedimos seu nome. Ao final você recebe um código de protocolo para acompanhar o caso.
         </p>
+        <div className="mt-6 rounded-md border border-border bg-secondary p-5 text-sm leading-relaxed text-muted-foreground">
+          <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-foreground">
+            Proteção dos seus dados (LGPD)
+          </h2>
+          <p>
+            Os dados informados são tratados conforme a{" "}
+            <strong className="text-foreground">
+              Lei Geral de Proteção de Dados Pessoais (LGPD) — Lei nº 13.709/2018
+            </strong>
+            . Eles são usados exclusivamente para analisar e encaminhar a denúncia, com acesso
+            restrito à equipe responsável, e não são vendidos nem compartilhados com terceiros sem
+            base legal. Você pode solicitar a confirmação, a correção ou a exclusão dos seus dados a
+            qualquer momento, informando o número do protocolo.
+          </p>
+        </div>
 
         <form onSubmit={onSubmit} className="mt-9 space-y-6">
           <div>
@@ -149,9 +164,9 @@ function Denunciar() {
 
           <div>
             <label htmlFor="contato" className="mb-2 block text-sm font-semibold text-foreground">
-              Contato (opcional)
+              Contato para retorno
             </label>
-            <input id="contato" name="contato" maxLength={150} className={inputCls} placeholder="E-mail ou telefone, apenas se quiser retorno" />
+            <input id="contato" name="contato" required maxLength={150} className={inputCls} placeholder="E-mail ou telefone" />
           </div>
 
           {erro && (
