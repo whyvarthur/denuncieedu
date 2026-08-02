@@ -14,18 +14,52 @@ export type Database = {
   }
   public: {
     Tables: {
+      denuncia_anexos: {
+        Row: {
+          caminho: string
+          created_at: string
+          id: string
+          nome: string
+          protocolo: string
+          tamanho: number | null
+          tipo: string | null
+        }
+        Insert: {
+          caminho: string
+          created_at?: string
+          id?: string
+          nome: string
+          protocolo: string
+          tamanho?: number | null
+          tipo?: string | null
+        }
+        Update: {
+          caminho?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          protocolo?: string
+          tamanho?: number | null
+          tipo?: string | null
+        }
+        Relationships: []
+      }
       denuncias: {
         Row: {
           cidade: string | null
           contato: string | null
           created_at: string
+          criptografado: boolean
           data_ocorrido: string | null
           descricao: string
           estado: string | null
           id: string
           instituicao: string
+          moderacao: Database["public"]["Enums"]["moderacao_status"]
+          motivo_rejeicao: string | null
           protocolo: string
           resposta: string | null
+          score_risco: number
           status: Database["public"]["Enums"]["denuncia_status"]
           tipo: Database["public"]["Enums"]["denuncia_tipo"]
           updated_at: string
@@ -34,13 +68,17 @@ export type Database = {
           cidade?: string | null
           contato?: string | null
           created_at?: string
+          criptografado?: boolean
           data_ocorrido?: string | null
           descricao: string
           estado?: string | null
           id?: string
           instituicao: string
+          moderacao?: Database["public"]["Enums"]["moderacao_status"]
+          motivo_rejeicao?: string | null
           protocolo: string
           resposta?: string | null
+          score_risco?: number
           status?: Database["public"]["Enums"]["denuncia_status"]
           tipo: Database["public"]["Enums"]["denuncia_tipo"]
           updated_at?: string
@@ -49,13 +87,17 @@ export type Database = {
           cidade?: string | null
           contato?: string | null
           created_at?: string
+          criptografado?: boolean
           data_ocorrido?: string | null
           descricao?: string
           estado?: string | null
           id?: string
           instituicao?: string
+          moderacao?: Database["public"]["Enums"]["moderacao_status"]
+          motivo_rejeicao?: string | null
           protocolo?: string
           resposta?: string | null
+          score_risco?: number
           status?: Database["public"]["Enums"]["denuncia_status"]
           tipo?: Database["public"]["Enums"]["denuncia_tipo"]
           updated_at?: string
@@ -98,6 +140,7 @@ export type Database = {
     Enums: {
       denuncia_status: "recebida" | "em_analise" | "encaminhada" | "resolvida"
       denuncia_tipo: "verbal" | "fisica" | "infraestrutura" | "outro"
+      moderacao_status: "pendente" | "aprovada" | "rejeitada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -227,6 +270,7 @@ export const Constants = {
     Enums: {
       denuncia_status: ["recebida", "em_analise", "encaminhada", "resolvida"],
       denuncia_tipo: ["verbal", "fisica", "infraestrutura", "outro"],
+      moderacao_status: ["pendente", "aprovada", "rejeitada"],
     },
   },
 } as const
