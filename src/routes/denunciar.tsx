@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Loader2, ArrowLeft, Paperclip, Lock } from "lucide-react";
 import { z } from "zod";
-import { registrarDenuncia } from "@/lib/denuncias.functions";
+import { enviarProvas, registrarDenuncia } from "@/lib/denuncias.functions";
 
 export const Route = createFileRoute("/denunciar")({
   head: () => ({
@@ -49,6 +49,30 @@ function Denunciar() {
   const navigate = useNavigate();
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [arquivos, setArquivos] = useState<File[]>([]);
+
+  function onArquivos(e: React.ChangeEvent<HTMLInputElement>) {
+    const lista = Array.from(e.target.files ?? []).slice(0, 5);
+    const grande = lista.find((f) => f.size > 12 * 1024 * 1024);
+    if (grande) {
+      setErro(`O arquivo "${grande.name}" passa de 12 MB.`);
+      setArquivos([]);
+      e.target.value = "";
+      return;
+    }
+    setErro(null);
+    setArquivos(lista);
+  }
+
+  async function paraBase64(file: File): Promise<string> {
+    const buffer = await file.arrayBuffer();
+    let binario = "";
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.length; i += 8192) {
+      binario += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    }
+    return btoa(binario);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,6 +97,20 @@ function Denunciar() {
           contato: v.contato,
         },
       });
+      if (arquivos.length) {
+        try {
+          const payload = await Promise.all(
+            arquivos.map(async (f) => ({
+              nome: f.name,
+              tipo: f.type || undefined,
+              base64: await paraBase64(f),
+            })),
+          );
+          await enviarProvas({ data: { protocolo, arquivos: payload } });
+        } catch {
+          // a denúncia já foi registrada; anexos podem ser reenviados depois
+        }
+      }
       navigate({ to: "/acompanhar", search: { protocolo } });
     } catch {
       setErro("Não foi possível enviar sua denúncia. Tente novamente em instantes.");
@@ -115,6 +153,14 @@ function Denunciar() {
             restrito à equipe responsável, e não são vendidos nem compartilhados com terceiros sem
             base legal. Você pode solicitar a confirmação, a correção ou a exclusão dos seus dados a
             qualquer momento, informando o número do protocolo.
+          </p>
+          <p className="mt-3 inline-flex items-start gap-2 text-foreground">
+            <Lock size={14} className="mt-0.5 shrink-0 text-accent" />
+            <span>
+              O relato, o contato e os arquivos enviados são <strong>criptografados</strong>{" "}
+              (AES-256-GCM) antes de serem armazenados. Toda denúncia passa por{" "}
+              <strong>moderação</strong> antes de ser encaminhada, para evitar denúncias falsas.
+            </span>
           </p>
         </div>
 
@@ -160,6 +206,32 @@ function Denunciar() {
           <div>
             <label htmlFor="descricao" className="mb-2 block text-sm font-semibold text-foreground">O que aconteceu?</label>
             <textarea id="descricao" name="descricao" required rows={7} maxLength={4000} className={inputCls} placeholder="Descreva o ocorrido: quando, onde e quem estava envolvido. Evite dados que possam te identificar, se preferir." />
+          </div>
+
+          <div>
+            <label htmlFor="provas" className="mb-2 block text-sm font-semibold text-foreground">
+              Provas (fotos, vídeos ou documentos)
+            </label>
+            <input
+              id="provas"
+              name="provas"
+              type="file"
+              multiple
+              accept="image/*,video/*,application/pdf,.doc,.docx"
+              onChange={onArquivos}
+              className={inputCls}
+            />
+            <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Paperclip size={12} /> Até 5 arquivos, 12 MB cada. Enviados criptografados e visíveis
+              apenas para a equipe responsável.
+            </p>
+            {arquivos.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                {arquivos.map((f) => (
+                  <li key={f.name}>• {f.name}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div>

@@ -54,6 +54,9 @@ type Denuncia = {
   resposta: string | null;
   created_at: string;
   updated_at: string;
+  moderacao?: string;
+  motivo_rejeicao?: string | null;
+  anexos?: number;
 };
 
 function Acompanhar() {
@@ -171,6 +174,24 @@ function Acompanhar() {
             <p className="mt-1 text-sm text-muted-foreground">
               Registrada em {new Date(dados.created_at).toLocaleDateString("pt-BR")}
             </p>
+
+            {dados.moderacao === "pendente" && (
+              <p className="mt-5 rounded-md border border-border bg-secondary px-4 py-3 text-sm text-muted-foreground">
+                Sua denúncia está em <strong className="text-foreground">moderação</strong>: a equipe
+                verifica o relato antes de encaminhá-lo, para evitar denúncias falsas.
+              </p>
+            )}
+            {dados.moderacao === "rejeitada" && (
+              <p className="mt-5 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                Esta denúncia não foi aprovada na moderação
+                {dados.motivo_rejeicao ? `: ${dados.motivo_rejeicao}` : "."}
+              </p>
+            )}
+            {typeof dados.anexos === "number" && dados.anexos > 0 && (
+              <p className="mt-3 text-sm text-muted-foreground">
+                {dados.anexos} arquivo(s) de prova anexado(s), armazenado(s) de forma criptografada.
+              </p>
+            )}
 
             <ol className="mt-7 space-y-4">
               {etapas.map((et) => {
