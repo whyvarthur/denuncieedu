@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Lock, Loader2, LogOut, RefreshCw } from "lucide-react";
+import { ArrowLeft, Lock, Loader2, LogOut, RefreshCw, Paperclip, ShieldAlert } from "lucide-react";
 import {
+  painelAbrirAnexo,
   painelAtualizar,
   painelListar,
   painelLogin,
@@ -43,6 +44,10 @@ type Denuncia = {
   status: string;
   resposta: string | null;
   created_at: string;
+  moderacao: string;
+  motivo_rejeicao: string | null;
+  score_risco: number;
+  anexos: { id: string; nome: string; tipo: string | null; tamanho: number | null }[];
 };
 
 const statusOpcoes = [
@@ -50,6 +55,12 @@ const statusOpcoes = [
   { v: "em_analise", l: "Em análise" },
   { v: "encaminhada", l: "Encaminhada" },
   { v: "resolvida", l: "Resolvida" },
+];
+
+const moderacaoOpcoes = [
+  { v: "pendente", l: "Pendente de moderação" },
+  { v: "aprovada", l: "Aprovada" },
+  { v: "rejeitada", l: "Rejeitada (falsa/inválida)" },
 ];
 
 const tipoLabel: Record<string, string> = {
@@ -232,8 +243,24 @@ function Painel() {
   );
 }
 
+async function abrirAnexo(id: string) {
+  try {
+    const a = await painelAbrirAnexo({ data: { id } });
+    const bin = atob(a.base64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([bytes], { type: a.tipo }));
+    window.open(url, "_blank", "noopener");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch {
+    alert("Não foi possível abrir o anexo.");
+  }
+}
+
 function Card({ d, onSalvo }: { d: Denuncia; onSalvo: () => void }) {
   const [status, setStatus] = useState(d.status);
+  const [moderacao, setModeracao] = useState(d.moderacao ?? "pendente");
+  const [motivo, setMotivo] = useState(d.motivo_rejeicao ?? "");
   const [resposta, setResposta] = useState(d.resposta ?? "");
   const [salvando, setSalvando] = useState(false);
   const [salvo, setSalvo] = useState(false);
@@ -245,6 +272,8 @@ function Card({ d, onSalvo }: { d: Denuncia; onSalvo: () => void }) {
         data: {
           protocolo: d.protocolo,
           status: status as "recebida" | "em_analise" | "encaminhada" | "resolvida",
+          moderacao: moderacao as "pendente" | "aprovada" | "rejeitada",
+          motivo_rejeicao: motivo.trim() || undefined,
           resposta: resposta.trim() || undefined,
         },
       });
@@ -265,6 +294,14 @@ function Card({ d, onSalvo }: { d: Denuncia; onSalvo: () => void }) {
         <span className="text-xs text-muted-foreground">
           {new Date(d.created_at).toLocaleString("pt-BR")}
         </span>
+        <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+          {moderacaoOpcoes.find((m) => m.v === (d.moderacao ?? "pendente"))?.l}
+        </span>
+        {d.score_risco >= 40 && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+            <ShieldAlert size={12} /> Risco de denúncia falsa: {d.score_risco}%
+          </span>
+        )}
       </div>
       <h2 className="mt-2 text-xl font-bold text-card-foreground">{d.instituicao}</h2>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -280,7 +317,43 @@ function Card({ d, onSalvo }: { d: Denuncia; onSalvo: () => void }) {
         </p>
       )}
 
+      {d.anexos?.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {d.anexos.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => abrirAnexo(a.id)}
+              className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-accent hover:text-foreground"
+            >
+              <Paperclip size={12} /> {a.nome}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="mt-5 grid gap-3 border-t border-border pt-5 sm:grid-cols-[200px_1fr]">
+        <div>
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Moderação
+          </label>
+          <select value={moderacao} onChange={(e) => setModeracao(e.target.value)} className={inputCls}>
+            {moderacaoOpcoes.map((m) => (
+              <option key={m.v} value={m.v}>
+                {m.l}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Motivo / observações da moderação
+          </label>
+          <input value={motivo} onChange={(e) => setMotivo(e.target.value)} maxLength={500} className={inputCls} />
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-[200px_1fr]">
         <div>
           <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Status
