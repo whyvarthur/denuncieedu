@@ -6,8 +6,14 @@ import { createHash, timingSafeEqual } from "node:crypto";
 type PainelSession = { admin?: boolean; usuario?: string };
 
 function sessionConfig() {
+  const password = process.env["PAINEL_SESSION_SECRET"];
+  if (!password || password.length < 32) {
+    throw new Error(
+      "PAINEL_SESSION_SECRET ausente ou muito curta (mínimo 32 caracteres) no ambiente de deploy.",
+    );
+  }
   return {
-    password: process.env["PAINEL_SESSION_SECRET"]!,
+    password,
     name: "painel-denuncie",
     maxAge: 60 * 60 * 12,
     cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
@@ -42,7 +48,11 @@ export const painelLogin = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => loginSchema.parse(input))
   .handler(async ({ data }) => {
     const lista = contas();
-    if (!lista.length) throw new Error("Painel não configurado.");
+    if (!lista.length) {
+      throw new Error(
+        "Painel não configurado: defina PAINEL_USUARIO e PAINEL_SENHA nas variáveis de ambiente do deploy.",
+      );
+    }
     const conta = lista.find((c) => matches(data.usuario, c.usuario) && matches(data.senha, c.senha));
     if (!conta) return { ok: false as const };
     const session = await useSession<PainelSession>(sessionConfig());
