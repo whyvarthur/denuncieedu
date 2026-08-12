@@ -14,6 +14,7 @@ import { Route as PainelRouteImport } from './routes/painel'
 import { Route as DenunciarRouteImport } from './routes/denunciar'
 import { Route as AcompanharRouteImport } from './routes/acompanhar'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PTokenRouteImport } from './routes/p.$token'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PTokenRoute = PTokenRouteImport.update({
+  id: '/p/$token',
+  path: '/p/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/denunciar': typeof DenunciarRoute
   '/painel': typeof PainelRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/p/$token': typeof PTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/denunciar': typeof DenunciarRoute
   '/painel': typeof PainelRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/p/$token': typeof PTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/denunciar': typeof DenunciarRoute
   '/painel': typeof PainelRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/p/$token': typeof PTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/acompanhar' | '/denunciar' | '/painel' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/acompanhar'
+    | '/denunciar'
+    | '/painel'
+    | '/sitemap.xml'
+    | '/p/$token'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/acompanhar' | '/denunciar' | '/painel' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/acompanhar'
+    | '/denunciar'
+    | '/painel'
+    | '/sitemap.xml'
+    | '/p/$token'
   id:
     | '__root__'
     | '/'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/denunciar'
     | '/painel'
     | '/sitemap.xml'
+    | '/p/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,6 +105,7 @@ export interface RootRouteChildren {
   DenunciarRoute: typeof DenunciarRoute
   PainelRoute: typeof PainelRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PTokenRoute: typeof PTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/$token': {
+      id: '/p/$token'
+      path: '/p/$token'
+      fullPath: '/p/$token'
+      preLoaderRoute: typeof PTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -131,17 +161,8 @@ const rootRouteChildren: RootRouteChildren = {
   DenunciarRoute: DenunciarRoute,
   PainelRoute: PainelRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PTokenRoute: PTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
