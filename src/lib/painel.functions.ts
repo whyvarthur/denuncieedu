@@ -60,6 +60,21 @@ export const painelLogin = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+const linkSchema = z.object({ token: z.string().trim().min(8).max(200) });
+
+export const painelEntrarPorLink = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => linkSchema.parse(input))
+  .handler(async ({ data }) => {
+    const esperado = process.env["PAINEL_LINK_TOKEN"];
+    if (!esperado) {
+      throw new Error("Link de acesso não configurado (PAINEL_LINK_TOKEN ausente).");
+    }
+    if (!matches(data.token, esperado)) return { ok: false as const };
+    const session = await useSession<PainelSession>(sessionConfig());
+    await session.update({ admin: true, usuario: "link" });
+    return { ok: true as const };
+  });
+
 export const painelLogout = createServerFn({ method: "POST" }).handler(async () => {
   const session = await useSession<PainelSession>(sessionConfig());
   await session.clear();
